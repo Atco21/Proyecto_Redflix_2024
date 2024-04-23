@@ -1,5 +1,5 @@
 /*
- * Autor: Alfred Thomas Comanescu
+ * @author Alfred Thomas Comanescu
  */
 
 public class Contenido {
