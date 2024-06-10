@@ -1,4 +1,4 @@
-package proyecto2024;
+
 
 
 import java.io.*;
