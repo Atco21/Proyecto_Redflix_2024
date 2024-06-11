@@ -30,24 +30,10 @@ public class PeliculaDAO {
         }
     }
 
-    public static void cargarPelicula(Pelicula pelicula, Connection con) throws SQLException {
-        
-        String sql = "INSERT INTO peliculas (titulo, duracion, genero, fechaEstreno, descripcion) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setString(1, pelicula.getTitulo());
-            stmt.setInt(2, pelicula.getDuracion());
-            stmt.setString(3, pelicula.getGenero());
-            stmt.setInt(4, pelicula.getFechaEstreno());
-            stmt.setString(5, pelicula.getDesc());
-            stmt.executeUpdate();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
 
     public void eliminarPelicula(String titulo, Connection con) throws SQLException {
 
-        String sql = "DELETE FROM peliculas WHERE title = ?";
+        String sql = "DELETE FROM peliculas WHERE titulo = ?";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, titulo);
             stmt.executeUpdate();
@@ -67,6 +53,22 @@ public class PeliculaDAO {
             e.printStackTrace();
         }
             
+    }
+
+
+    public static void aniadirPelicula(Pelicula pelicula, int contenidoId, Connection con) {
+        String sql = "INSERT INTO Peliculas (id_contenido, nombre, duracion, genero, fechaEstreno, descripcion) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, contenidoId);
+            ps.setString(2, pelicula.getTitulo());
+            ps.setInt(3, pelicula.getDuracion());
+            ps.setString(4, pelicula.getGenero());
+            ps.setInt(5, pelicula.getFechaEstreno());
+            ps.setString(6, pelicula.getDesc());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
     

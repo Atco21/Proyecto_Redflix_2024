@@ -16,6 +16,11 @@ package Entidad;
          super(titulo, duracion, genero, fechaEstreno,  desc);
          this.temporadas = temporadas; 
      }
+
+     public Programa(Contenido contenido, int temporadas) {
+        super(contenido.getTitulo(), contenido.getDuracion(), contenido.getGenero(), contenido.getFechaEstreno(), contenido.getDesc());
+        this.temporadas = temporadas;
+    }
  
      //METODOS
      public int getTemporadas() {

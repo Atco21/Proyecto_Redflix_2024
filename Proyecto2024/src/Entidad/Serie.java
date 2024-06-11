@@ -26,6 +26,11 @@ public class Serie extends Contenido{
         
     }
 
+    public Serie(Contenido contenido, int temporadas, String estado) {
+        super(contenido.getTitulo(), contenido.getDuracion(), contenido.getGenero(), contenido.getFechaEstreno(), contenido.getDesc());
+        this.temporadas = temporadas;
+        this.estado = estado;
+    }
     // GETTERS Y SETTERS
     public int getTemporadas() {
         return temporadas;

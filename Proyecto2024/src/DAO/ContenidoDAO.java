@@ -7,6 +7,8 @@ package DAO;
 import java.sql.*;
 
 import Entidad.Contenido;
+import Entidad.Pelicula;
+import Utils.Conexion_DB;
 
 /**
  *
@@ -43,19 +45,7 @@ public class ContenidoDAO {
         }
     }
 
-    public void eliminarPelicula(String titulo, Connection con) throws SQLException {
-
-        String sql = "DELETE FROM peliculas WHERE title = ?";
-        try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setString(1, titulo);
-            stmt.executeUpdate();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-
-    public void buscarPelicula(String titulo, Connection con) throws SQLException{
+    public void buscarConetnido(String titulo, Connection con) throws SQLException{
 
         String sql = "SELECT FROM peliculas where titulo = ?";
         try(PreparedStatement stmt = con.prepareStatement(sql)){
@@ -65,6 +55,36 @@ public class ContenidoDAO {
             e.printStackTrace();
         }
             
+    }
+
+
+    
+
+    public static int obtenerContenidoIDPorNombre(String nombre, Connection con) {
+        String sql = "SELECT id FROM Contenido WHERE nombre = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombre);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Retorna -1 si no se encuentra el contenido
+    }
+
+
+    public static void eliminarContenido(Contenido contenido, Connection con, String titulo) throws SQLException {
+        
+        String sql = "DELETE FROM Contenido WHERE titulo = ?";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, titulo);
+            stmt.executeUpdate();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
     
 }

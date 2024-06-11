@@ -38,6 +38,7 @@ public class Redflix {
         ArrayList<Pelicula> peliculaLista = new ArrayList<>();
         ArrayList<Serie> serieLista = new ArrayList<>();
         ArrayList<Programa> programasTVLista = new ArrayList<>();
+        ArrayList<Contenido> contenidoLista = new ArrayList<>();
             
         // Conexión a la base de datos
         Conexion_DB _conexion_DB = new Conexion_DB();
@@ -49,23 +50,24 @@ public class Redflix {
             cargarArraySeries(serieLista);
             cargarArrayProgramasTV(programasTVLista);
             boolean check = true;
+            boolean finish = true;
             
             int sel = menuTipoUsuario();
-
+            do{
             switch (sel) {
                 case 1:
                     System.out.println();
                     System.out.println("************* HOLA ADMIN *************");
                     System.out.println("¿Que deseas hacer? ");
 
-                    do {
+                    
                         menuAdmin();
                         byte opc = tec.nextByte();
                         tec.nextLine(); 
 
                         switch (opc) {
                             case 1:
-                                menuContenidoAdmin( peliculaLista, serieLista, programasTVLista, con);
+                                menuContenidoAdmin( peliculaLista, serieLista, programasTVLista, con, contenidoLista);
                                 break;
                             case 2:
                                 menuUsuarioAdmin(con);
@@ -76,23 +78,26 @@ public class Redflix {
                                 break;
                             case 0: 
                                 _conexion_DB.CerrarConexion(con);
+                                finish = false;
                                 break;
                             default:
+
+                                System.out.println("Opcion invalida. intentenlo de nuevo");
                                 break;
                         }
                         
-                    } while (check);
+                    
                     break;
 
                 case 2:
 
                     System.out.println();
                     menuUsuario();
-                    int opc = tec.nextInt();
+                    int opc2 = tec.nextInt();
                     tec.nextLine(); // Consumir la nueva línea pendiente
 
 
-                    switch (opc) {
+                    switch (opc2) {
                         case 1:
                             System.out.println();
                             System.out.println("******* INICIO DE SESIÓN *******");
@@ -125,6 +130,7 @@ public class Redflix {
                             }
                             break;
                         case 2:
+                            
                             System.out.println();
                             System.out.println("******* REGISTRARSE *******");
                             System.out.print("Ingrese su DNI: ");
@@ -158,9 +164,14 @@ public class Redflix {
 
                             System.out.println("Usuario registrado exitosamente.");
                             break;  
+                        
+                        case 0:
+                            finish = false;
+                            break;
                         default:
                             System.out.println("Opción inválida... Inténtelo de nuevo");
                             break;
+
                     }
 
                     break;
@@ -169,14 +180,18 @@ public class Redflix {
                     System.out.println("Opción inválida... Inténtelo de nuevo");
                     break;
             }
-
             
+
+        }while(finish);
+
+
                 if (con != null) con.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             } catch(Exception e) {
                 e.printStackTrace();
             }
+ 
     }
 
     
@@ -218,10 +233,9 @@ public class Redflix {
         }
     }
 
-
-
     private static void menuUsuarioAdmin(Connection con) throws SQLException{
        
+        System.out.println("Menú Gestion de Usuarios");
         System.out.println("¿Que deseas hacer?");
         System.out.println("1. Buscar Usuario");
         System.out.println("2. Eliminar Usuario");
@@ -248,7 +262,7 @@ public class Redflix {
     }
 
 
-    private static void menuContenidoAdmin(ArrayList<Pelicula> peliculaLista,  ArrayList<Serie> serieLista,  ArrayList<Programa> programasTVLista, Connection con) throws SQLException{
+    private static void menuContenidoAdmin(ArrayList<Pelicula> peliculaLista,  ArrayList<Serie> serieLista,  ArrayList<Programa> programasTVLista, Connection con, ArrayList<Contenido> contenidoLista) throws SQLException{
 
 
         System.out.println("Menú Gestion de Contenido: ");
@@ -283,16 +297,19 @@ public class Redflix {
                 String desc = tec.nextLine();
             
                 Contenido contenido = new Contenido(nombre, duracion, generoString, fechaEstreno, desc);
-                ContenidoDAO.aniadirContenido(contenido, con);
+                ContenidoDAO.aniadirContenido(contenido, con); 
 
+                añadirTipoContenido(peliculaLista, serieLista, programasTVLista, con, contenido);
                 break;
 
+                
+
             case 2:
-                mostrarContenido(peliculaLista, serieLista, programasTVLista);
+                mostrarContenido(contenidoLista);
                 break;
 
             case 3:
-                eliminarContenido(peliculaLista, serieLista, programasTVLista);
+                eliminarContenido(contenidoLista, con);
                 break;
 
             case 0:
@@ -304,6 +321,23 @@ public class Redflix {
                 break;
         }
     }
+    private static void menuAdmin() {
+        System.out.println("1. Sistema de contenido");
+        System.out.println("2. Sistema de Usuarios");
+        System.out.println("3. Sistema de Contrataciones y Paquetes");
+        System.out.println("0. Salir");
+        System.out.println("Elige una opción:");
+    }
+    private static void contAdmin(){
+
+        System.out.println("1. Añadir Contenido");
+        System.out.println("2. Mostrar Contenido");
+        System.out.println("3. Eliminar Contenido");
+        System.out.println("Elige una opción: ");
+
+    
+    }
+
     private static int menuTipoUsuario(){
 
         System.out.println("¿Que tipo de usuario eres?");
@@ -315,29 +349,13 @@ public class Redflix {
         return opc;
 
     }
-    private static void menuAdmin() {
-        System.out.println("1. Sistema de contenido");
-        System.out.println("2. Sistema de Usuarios");
-        System.out.println("3. Sistema de Contrataciones y Paquetes");
-        System.out.println("0. Salir");
-        System.out.println("Elige una opción:");
-    }
     private static void menuUsuario(){
         System.out.println("1. Iniciar sesion");
         System.out.println("2. Registrarse");
-    }
-    private static void contAdmin(){
-
-        System.out.println("1. Aniadir contenido");
-        System.out.println("2. Mostrar Contenido");
-        System.out.println("3. Eliminar Contenido");
-        System.out.println("Elige una opción: ");
-
-    
+        System.out.println("0. Volver");
     }
 
-
-    public static void añadirTipoContenido(ArrayList<Pelicula> peliculaLista, ArrayList<Serie> serieLista, ArrayList<Programa> programasTVLista, Connection con) throws SQLException{
+    private static void añadirTipoContenido(ArrayList<Pelicula> peliculaLista, ArrayList<Serie> serieLista, ArrayList<Programa> programasTVLista, Connection con, Contenido contenido) throws SQLException{
        
         byte opc;
     
@@ -355,15 +373,16 @@ public class Redflix {
                 break;
 
             case 1:
-                añadirPelicula(peliculaLista, con);
+                añadirPelicula(contenido, peliculaLista, con);
+
                 break;
 
             case 2:
-                añadirSerie(serieLista, con);
+                añadirSerie(contenido, serieLista, con);
                 break;
 
             case 3:
-                añadirProgramaTV(programasTVLista, con);
+                añadirProgramaTV(contenido, programasTVLista, con);
                 break;
 
             default:
@@ -371,303 +390,155 @@ public class Redflix {
                 break;
         }
     }
-    public static void mostrarContenido(ArrayList<Pelicula> peliculaLista, ArrayList<Serie> serieLista, ArrayList<Programa> programasTVLista) throws SQLException{
-        System.out.println("Películas: ");
-        for (Pelicula pelicula : peliculaLista) {
-            System.out.println(pelicula);
-        }
-
-        System.out.println();
-
-        System.out.println("Series: ");
-        for (Serie serie : serieLista) {
-            System.out.println(serie);
-        }
-
-        System.out.println();
-
-        System.out.println("Programas: ");
-        for (Programa programaTV : programasTVLista) {
-            System.out.println(programaTV);
-        }
-    }
-    public static void eliminarContenido(ArrayList<Pelicula> peliculaLista, ArrayList<Serie> serieLista,ArrayList <Programa> programasTVLista) throws SQLException{
-
-        
-        System.out.println();
-        System.out.println("1. Eliminar Pelicula\n2. Eliminar Serie\n3. Eliminar Programa");
-        byte opc = tec.nextByte();
-        tec.nextLine();
-
-        System.out.println();
-        boolean check = false;
-
-        switch (opc) {
-
-            case 1:
-                
-                System.out.println("Dame el nombre de la pelicula que quieres eliminar: ");
-                String nombre = tec.nextLine();
-
-                for (Pelicula pelicula : peliculaLista) {
-
-                    if (pelicula.getTitulo().equalsIgnoreCase(nombre)) {
-
-                        peliculaLista.remove(pelicula);
-
-                        System.out.println("Película eliminada: " + pelicula.getTitulo());
-            
-                        check = true;
-                    
-                    }
-
-                    if(check == false){
-                        System.out.println("Película inexistente. No se ha podido borrar.");
-                    }else{
-                        System.out.println("Película borrada con existo");
-                    }
-                }
-            break;
-
-
-            case 2:
-                System.out.println();
-                System.out.println("Dame el nombre de la serie que quieres eliminar: ");
-                String nombre2=tec.nextLine();
-
-                for (Serie serie : serieLista) {
-
-                    if (serie.getTitulo().equalsIgnoreCase(nombre2)) {
-
-                        serieLista.remove(serie);
-
-                        check = true;
-
-                        System.out.println("Serie eliminada: " + serie.getTitulo());
-                    }
-
-                        if(check == false){
-                            System.out.println("Serie inexistente. No se ha podido borrar.");
-                        }else{
-                            System.out.println("Serie borrada con existo");
-                        }
-                    }
-            break;
-
-
-            case 3:
-                System.out.println();
-                System.out.println("Dame el nombre del Programa que quieres eliminar: ");
-                String nombre3=tec.nextLine();
-
-                for (Programa p : programasTVLista) {
-
-                    if (p.getTitulo().equalsIgnoreCase(nombre3)) {
-                        programasTVLista.remove(p);
-                        check = true;
-                        System.out.println("Programa eliminado: " + p.getTitulo());
-                        
-                    }
-
-                        if(check == false){
-                            System.out.println("Programa inexistente. No se ha podido borrar.");
-                        }else{
-                            System.out.println("Programa borrado con exito");
-                        }
-                    }
-                
-            break;
-            
-
-            default:
-
-                System.out.println("Opción invalida.");
-
-            break;
-        }
-    }
     
     
     
-    public static void añadirPelicula(ArrayList<Pelicula> peliculaLista, Connection con) throws SQLException {
-
-        boolean c = true;
-
-        tec.nextLine();
-        String nombre;
-        int duracion;
-        Byte genero;
-        String generoString = "Desconocido";
-        while (c) {
-        
-            System.out.println("Dame el nombre de la película:");
-            nombre = tec.nextLine();
-        
-            if (nombre.isEmpty()) {
-                System.out.println("Nombre inválido.");
-                c = false;
-            }
-        
-            System.out.println("Dame la duración de la película (en minutos):");
-            duracion = tec.nextInt();
-        
-            if (duracion <= 0) {
-                System.out.println("Duración inválida.");
-                c = false;
-            }
-        
-            System.out.println("Dame el género:");
-            System.out.println("\n1. Terror\n2. Ciencia Ficción\n3. Acción\n4. Suspense\n5. Comedia\n6. Desconocido");
-            genero = tec.nextByte();
-            generoString= obtenerGenero(genero);
-
-            System.out.println("Fecha de estreno: ");
-            int fechaEstreno = tec.nextInt();
-            tec.nextLine();
-
-            System.out.println("Pequeña descripción: ");
-            String desc = tec.nextLine();
-        
-        Pelicula nuevaPelicula = new Pelicula(nombre, duracion, generoString, fechaEstreno, desc);
-        peliculaLista.add(nuevaPelicula);
-        PeliculaDAO.cargarPelicula(nuevaPelicula, con);
-        cargarFicheroPeliculas(nuevaPelicula);
-        System.out.println("Película añadida correctamente.");
-
-        c = false;
+    
+    public static void añadirPelicula(Contenido contenido, ArrayList<Pelicula> peliculaLista, Connection con) {
+        System.out.println("Dame el nombre de la película que quieres añadir:");
+        String nombre = tec.nextLine();
+    
+        int contenidoId = ContenidoDAO.obtenerContenidoIDPorNombre(nombre, con);
+        if (contenidoId == -1) {
+            System.out.println("No se encontró contenido con ese nombre. Por favor, añade primero el contenido.");
+            return;
         }
-    }
-    public static void añadirSerie(ArrayList <Serie> serieLista, Connection con)throws SQLException{
-
-        String nombre;
-        int duracion;
-        Byte genero;
-        byte temporadas;
-        String generoString;
-
-
-        System.out.println("Dame el nombre de la serie: ");
-        nombre = tec.nextLine();
-
-
-        System.out.println("Dame la duracion media por capitulo de la serie: (en minutos) ");
-        duracion = tec.nextInt();
-
-
-        System.out.println("Dame el genero:");
-        System.out.println("\n1. Terror\n2. Ciencia Ficcion\n3. Acción\n4. Suspense\n5. Comedia");
-        genero = tec.nextByte();
-        generoString = obtenerGenero(genero);
-
-
-        System.out.println("Numero de temporadas: ");
-        temporadas=tec.nextByte();
-        
-
+    
+        System.out.println("Dame la duración del contenido (en minutos):");
+        int duracion = tec.nextInt();
+        tec.nextLine(); // Consumir la nueva línea pendiente
+    
+        System.out.println("Dame el género:");
+        System.out.println("\n1. Terror\n2. Ciencia Ficción\n3. Acción\n4. Suspense\n5. Comedia\n6. Desconocido");
+        byte genero = tec.nextByte();
+        tec.nextLine(); // Consumir la nueva línea pendiente
+        String generoString = obtenerGenero(genero);
+    
         System.out.println("Fecha de estreno: ");
         int fechaEstreno = tec.nextInt();
+        tec.nextLine(); // Consumir la nueva línea pendiente
+    
+        System.out.println("Pequeña descripción: ");
+        String descripcion = tec.nextLine();
+    
+        Pelicula nuevaPelicula = new Pelicula(nombre, duracion, generoString, fechaEstreno, descripcion);
+        peliculaLista.add(nuevaPelicula);
+        PeliculaDAO.aniadirPelicula(nuevaPelicula, contenidoId, con);
+    
+        System.out.println("Película añadida correctamente.");
+    }
+    public static void añadirSerie(Contenido contenido, ArrayList<Serie> serieLista, Connection con) throws SQLException {
 
+        System.out.println("Dame el nombre de la serie que quieres añadir:");
+        String nombre = tec.nextLine();
+    
+        int contenidoId = ContenidoDAO.obtenerContenidoIDPorNombre(nombre, con);
+        if (contenidoId == -1) {
+            System.out.println("No se encontró contenido con ese nombre. Por favor, añade primero el contenido.");
+            return;
+        }
 
-        System.out.println("Dame una breve descripción sobre la serie: ");
-        String desc = tec.nextLine();
-
-
-        System.out.println("¿En que estado se encuentra? ");
+        System.out.println("Añadiendo detalles específicos para Serie.");
+        System.out.println("Número de temporadas: ");
+        int temporadas = tec.nextInt();
+        tec.nextLine();
+    
+        System.out.println("¿En qué estado se encuentra? ");
         System.out.println("1. En emisión ");
-        System.out.println("2. Finalizadas");
+        System.out.println("2. Finalizada");
         int opc = tec.nextInt();
+        tec.nextLine(); // Consumir la nueva línea pendiente
         String estado = obtenerEstadoSerie(opc);
-        
-
-        Serie nuevaSerie = new Serie(nombre, duracion, temporadas, generoString, fechaEstreno, desc, estado);
+    
+        Serie nuevaSerie = new Serie(contenido, temporadas, estado);
         serieLista.add(nuevaSerie);
         SerieDAO.cargarSerieDB(nuevaSerie, con);
+        cargarFicheroSeries(serieLista);
+        System.out.println("Serie añadida correctamente.");
     }
-    public static void añadirProgramaTV(ArrayList<Programa> programasTVLista, Connection con) throws SQLException{
+    public static void añadirProgramaTV(Contenido contenido, ArrayList<Programa> programasTVLista, Connection con) throws SQLException {
 
-        String nombre;
-        int duracion;
-        int temporadas;
-        Byte genero;
-        String generoString = "Desconocido";
-        String mensaje = null;
-        Boolean cont=true;
+        System.out.println("Dame el nombre del prograna que quieres añadir:");
+        String nombre = tec.nextLine();
+    
+        int contenidoId = ContenidoDAO.obtenerContenidoIDPorNombre(nombre, con);
+        if (contenidoId == -1) {
+            System.out.println("No se encontró contenido con ese nombre. Por favor, añade primero el contenido.");
+            return;
+        }
+
+        System.out.println("Añadiendo detalles específicos para Programa TV.");
+        System.out.println("Número de temporadas: ");
+        int temporadas = tec.nextInt();
+        tec.nextLine();
+    
+        Programa nuevoPrograma = new Programa(contenido, temporadas);
+        programasTVLista.add(nuevoPrograma);
+        ProgramaDAO.cargar(nuevoPrograma, con);
+        cargarFicheroProgramasTV(programasTVLista);
+        System.out.println("Programa TV añadido correctamente.");
+    }
 
 
-        while(cont){
-            System.out.println("Dame el nombre del programa de TV: ");
-            nombre = tec.nextLine();
-            tec.next();
-            if(nombre == null){ 
-                mensaje = "Nombre invalido";
-                cont = false;
+    public static void mostrarContenido(ArrayList<Contenido> contenidoLista){
+        System.out.println("Contenido que tenemos en el programa: ");        
+        for (Contenido contenido : contenidoLista) {
+            contenido.toString();
+        }
+
+    }
+    public static void eliminarContenido(ArrayList<Contenido> contenidoLista, Connection con)throws SQLException{
+
+        boolean check = false;
+        
+        System.out.println();
+        System.out.println("Eliminar contenido: ");
+        System.out.println();
+
+
+        System.out.println("Dame el nombre del contenido que quieres eliminar");
+        String nombre = tec.nextLine();
+
+        for (Contenido contenido : contenidoLista) {
+
+            if (contenido.getTitulo().equalsIgnoreCase(nombre)) {
+
+                contenidoLista.remove(contenido);
+
+                System.out.println("Contenido eliminado: " + contenido.getTitulo());
+                
+                ContenidoDAO.eliminarContenido(contenido, con, nombre);
+
+                check = true;
+
+
+            
+            }
+        }
+            if(check == false){
+                System.out.println("Contenido inexistente. No se ha podido borrar.");
             }else{
-                System.out.println("Dame la duracion del programaTV: (en minutos) ");
-                    duracion = tec.nextInt();
-                if(duracion > 0){
-
-                    System.out.println("Dame el genero:");
-                    System.out.println("\n 1. Documentales\n 2. Reality Shows\n 3. Entrevistas y talkshows\n 4. Comedia");
-                    genero = tec.nextByte();
-                    
-                    switch (genero) { 
-                        case 1:
-                            generoString = "Documentales";
-                            break;
-        
-                        case 2:
-                            generoString = "Reality Shows";
-                            break;     
-                        case 3:
-                            generoString = "Entrevistas y talkshows";
-                            break;
-                        case 4:
-                            generoString = "Comedia";
-                            break;
-
-                        default:
-                            mensaje = "Genero invalido";
-                            cont = false;
-                    }
-
-                    System.out.println("Cuantas temporadas tiene el programa de TV");
-                    temporadas = tec.nextInt();
-
-                    System.out.println("Cuanto se lanzo el programa: ");
-                    int fechaEstreno = tec.nextInt();
-
-                    System.out.println("Dame una breve descripción del programa: ");
-                    String desc = tec.nextLine();
-
-                    Programa pTv = new Programa(nombre, duracion, generoString, fechaEstreno, desc, temporadas);
-                    programasTVLista.add(pTv);
-                    ProgramaDAO.cargar(pTv, con);
-                    
-
-        
+                System.out.println("Contenido borrado con exito");
             }
 
-        }
-        if(!cont){
-            System.out.println(mensaje);
-        }
-        }
+        
     }
-
 
    
 
 
-    public static void cargarFicheroPeliculas(Pelicula p){
+    public static void cargarFicheroPeliculas(ArrayList <Pelicula> peliculaLista){
         
-        File f = new File("Peliculas.obj");
+        File f = new File("/Ficheros/Peliculas.obj");
  
          try{
-             FileOutputStream fs = new FileOutputStream("Peliculas.obj", true);
+             FileOutputStream fs = new FileOutputStream(f, true);
              ObjectOutputStream oos = new ObjectOutputStream(fs);
  
             
-                oos.writeObject(p);
+             for (Pelicula pelicula : peliculaLista ) {
+                oos.writeObject(pelicula);
+            }
             
  
              if(oos != null){
@@ -680,9 +551,8 @@ public class Redflix {
              e.printStackTrace();
          }
          
-     }
-     
-     public static void cargarFicheroSeries(ArrayList <Serie> SerieLista){
+    }
+    public static void cargarFicheroSeries(ArrayList <Serie> SerieLista){
          
          File f = new File("/Ficheros/Series.obj");
   
@@ -690,8 +560,8 @@ public class Redflix {
               FileOutputStream fs = new FileOutputStream(f, true);
               ObjectOutputStream oos = new ObjectOutputStream(fs);
   
-              for (Contenido contenido : SerieLista ) {
-                  oos.writeObject(contenido);
+              for (Serie serie : SerieLista ) {
+                  oos.writeObject(serie);
               }
   
               if(oos != null){
@@ -704,11 +574,10 @@ public class Redflix {
               e.printStackTrace();
           }
           
-     }
- 
-     public static void cargarFicheroProgramasTV(ArrayList <Programa> programasTVLista){
+    }
+    public static void cargarFicheroProgramasTV(ArrayList <Programa> programasTVLista){
          
-         File f = new File("//Ficheros//Series.obj");
+         File f = new File("/Ficheros/Programas.obj");
   
           try{
               FileOutputStream fs = new FileOutputStream(f, true);
@@ -728,12 +597,33 @@ public class Redflix {
               e.printStackTrace();
           }
           
-     }
+    }
+    public static void cargarFicheroContenido(ArrayList <Contenido> contenidoLista){
 
+        File f = new File("/Ficheros/Contenido.obj");
+  
+          try{
+              FileOutputStream fs = new FileOutputStream(f, true);
+              ObjectOutputStream oos = new ObjectOutputStream(fs);
+  
+              for (Contenido contenido : contenidoLista ) {
+                  oos.writeObject(contenido);
+              }
+  
+              if(oos != null){
+                  oos.close();
+                  fs.close();
+  
+              }
+      
+          }catch(Exception e){
+              e.printStackTrace();
+          }
 
+    }
 
-     public static void cargarArrayPeliculas(ArrayList<Pelicula> peliculaLista) {
-        File f = new File("Ficheros//Peliculas.obj");
+    public static void cargarArrayPeliculas(ArrayList<Pelicula> peliculaLista) {
+        File f = new File("/Ficheros/Peliculas.obj");
         if (f.exists() && f.length() > 0) { // Verificar si el archivo existe y no está vacío
             try (FileInputStream fs = new FileInputStream(f);
                  ObjectInputStream ois = new ObjectInputStream(fs)) {
@@ -755,9 +645,8 @@ public class Redflix {
             System.out.println("El archivo Peliculas.obj no existe o está vacío.");
         }
     }
-
     public static void cargarArraySeries(ArrayList<Serie> serieLista) {
-        File f = new File("Ficheros//Series.obj");
+        File f = new File("/Ficheros/Series.obj");
         if (f.exists() && f.length() > 0) { // Verificar si el archivo existe y no está vacío
             try (FileInputStream fs = new FileInputStream(f);
                  ObjectInputStream ois = new ObjectInputStream(fs)) {
@@ -779,9 +668,8 @@ public class Redflix {
             System.out.println("El archivo Series.obj no existe o está vacío.");
         }
     }
-
     public static void cargarArrayProgramasTV(ArrayList<Programa> programasTVLista) {
-        File f = new File("Ficheros//ProgramasTV.obj");
+        File f = new File("/Ficheros/ProgramasTV.obj");
         if (f.exists() && f.length() > 0) { // Verificar si el archivo existe y no está vacío
             try (FileInputStream fs = new FileInputStream(f);
                  ObjectInputStream ois = new ObjectInputStream(fs)) {
@@ -803,39 +691,62 @@ public class Redflix {
             System.out.println("El archivo ProgramasTV.obj no existe o está vacío.");
         }
     }
-
-    public static void printSQLException(SQLException ex) {
-
-        ex.printStackTrace(System.err);
-        System.err.println("SQLState: " + ex.getSQLState());
-        System.err.println("Error Code: " + ex.getErrorCode());
-        System.err.println("Message: " + ex.getMessage());
-        Throwable t = ex.getCause();
-        while (t != null) {
-            System.out.println("Cause: " + t);
-            t = t.getCause();
+    public static void cargarArrayContenido(ArrayList<Contenido> contenidoLista) {
+        File f = new File("/Ficheros/Cotenido.obj");
+        if (f.exists() && f.length() > 0) { // Verificar si el archivo existe y no está vacío
+            try (FileInputStream fs = new FileInputStream(f);
+                 ObjectInputStream ois = new ObjectInputStream(fs)) {
+    
+                boolean continuar = true;
+                while (continuar) {
+                    try {
+                        Contenido c = (Contenido) ois.readObject();
+                        contenidoLista.add(c);
+                    } catch (EOFException e) {
+                        continuar = false; // Fin del archivo
+                    }
+                }
+    
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("El archivo Peliculas.obj no existe o está vacío.");
         }
     }
+
+
+
 
     private static String obtenerGenero(byte genero) {
         String g;
         switch (genero) {
             case 1:
                 g = "Terror";
+                break;
             case 2:
                 g= "Ciencia Ficción";
+                break;
+
             case 3:
                 g= "Acción";
+                break;
+
             case 4:
                 g= "Suspense";
+                break;
+
             case 5:
                 g= "Comedia";
+                break;
+
             default:
                 g= "Desconocido";
+                break;
+
         }
         return g;
     }
-    
     private static String obtenerEstadoSerie(int opc) {
         switch (opc) {
             case 1:

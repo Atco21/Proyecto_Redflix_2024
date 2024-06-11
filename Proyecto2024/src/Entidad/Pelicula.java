@@ -26,5 +26,8 @@ public class Pelicula extends Contenido {
         return super.toString();
         
     }
+    public Pelicula(Contenido contenido) {
+        super(contenido.getTitulo(), contenido.getDuracion(), contenido.getGenero(), contenido.getFechaEstreno(), contenido.getDesc());
+    }
  
 }
