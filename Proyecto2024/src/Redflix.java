@@ -14,6 +14,7 @@ import Entidad.Usuario;
 import Utils.Conexion_DB;
 import DAO.UsuarioDAO;
 import DAO.SerieDAO;
+import DAO.ContenidoDAO;
 import DAO.PaquetesDAO;
 import DAO.PeliculaDAO;
 import DAO.ProgramaDAO; 
@@ -185,8 +186,8 @@ public class Redflix {
         while (true) {
             System.out.println("\nMenú de Gestión de Paquetes:");
             System.out.println("1. Ver paquetes");
-            System.out.println("2. Añadir película a paquete");
-            System.out.println("3. Eliminar película de paquete");
+            System.out.println("2. Añadir contenido  a paquete");
+            System.out.println("3. Eliminar contenido de paquete");
             System.out.println("0. Volver al menú principal");
             System.out.print("Elija una opción: ");
             
@@ -256,7 +257,34 @@ public class Redflix {
         int opc = tec.nextInt();    
         switch (opc) {
             case 1:
-                añadirContenido(peliculaLista, serieLista, programasTVLista, con);
+                 
+            String nombre;
+            int duracion;
+            Byte genero;
+            String generoString = "Desconocido";
+            
+                tec.nextLine();
+                System.out.println("Dame el nombre del contenido:");
+                nombre = tec.nextLine();
+            
+                System.out.println("Dame la duración del contenido (en minutos):");
+                duracion = tec.nextInt();
+            
+                System.out.println("Dame el género:");
+                System.out.println("\n1. Terror\n2. Ciencia Ficción\n3. Acción\n4. Suspense\n5. Comedia\n6. Desconocido");
+                genero = tec.nextByte();
+                generoString= obtenerGenero(genero);
+    
+                System.out.println("Fecha de estreno: ");
+                int fechaEstreno = tec.nextInt();
+                tec.nextLine();
+    
+                System.out.println("Pequeña descripción: ");
+                String desc = tec.nextLine();
+            
+                Contenido contenido = new Contenido(nombre, duracion, generoString, fechaEstreno, desc);
+                ContenidoDAO.aniadirContenido(contenido, con);
+
                 break;
 
             case 2:
@@ -304,17 +332,20 @@ public class Redflix {
         System.out.println("2. Mostrar Contenido");
         System.out.println("3. Eliminar Contenido");
         System.out.println("Elige una opción: ");
+
+    
     }
 
 
-    public static void añadirContenido(ArrayList<Pelicula> peliculaLista, ArrayList<Serie> serieLista, ArrayList<Programa> programasTVLista, Connection con) throws SQLException{
+    public static void añadirTipoContenido(ArrayList<Pelicula> peliculaLista, ArrayList<Serie> serieLista, ArrayList<Programa> programasTVLista, Connection con) throws SQLException{
        
         byte opc;
+    
 
-        System.out.println("¿Qué tipo de contenido deseas añadir?");
-        System.out.println("1. Añadir película");
-        System.out.println("2. Añadir serie");
-        System.out.println("3. Añadir Programa TV");
+        System.out.println("¿Qué tipo de contenido acabas de añadir?");
+        System.out.println("1. película");
+        System.out.println("2. serie");
+        System.out.println("3. Programa TV");
         System.out.println("0. Salir");
         opc = tec.nextByte();
 

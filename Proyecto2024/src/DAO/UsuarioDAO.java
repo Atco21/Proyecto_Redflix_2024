@@ -26,7 +26,7 @@ import Entidad.Usuario;
         
         String referidoPor = tec.nextLine();
 
-        String sql = "INSERT INTO usuarios (dni, nombre, direccion, correo, contrasenia, referido_por) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuario (dni, nombre, direccion, correo, contrasena, referido_por) VALUES (?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, u.getDni());
@@ -50,7 +50,7 @@ import Entidad.Usuario;
     public void contratarPaquete(String dni, String numCuenta, int idPaquete, Connection con) throws SQLException {
 
     
-        String sqlCliente = "INSERT INTO clientes (dni, num_cuenta, estado) VALUES (?, ?, 'activo')";
+        String sqlCliente = "INSERT INTO cliente (dni, num_cuenta, estado) VALUES (?, ?, 'activo')";
         String sqlClientePaquete = "INSERT INTO cliente_paquete (dni, id_paquete, fechaExpiracion) VALUES (?, ?, ?)";
         String sqlValidezPaquete = "SELECT validez FROM paquetes WHERE id_paquete=?";
 
@@ -104,7 +104,7 @@ import Entidad.Usuario;
         System.out.print("Ingrese su contraseña: ");
         String contrasenia = tec.nextLine();
 
-        String sql = "SELECT correo, contrasenia FROM usuarios WHERE correo = ? AND contrasenia = ?";
+        String sql = "SELECT correo, contrasena FROM Usuario WHERE correo = ? AND contrasena = ?";
         ResultSet rs = null;
 
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
