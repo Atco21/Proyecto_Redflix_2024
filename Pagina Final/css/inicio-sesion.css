@@ -1,0 +1,60 @@
+body {
+    background-color: green;
+    font-size: 2em;
+    margin: 0;
+    color: black;
+}
+p.titulo{
+
+   
+    font-weight: bold;
+    font-size: 1.5em;
+    background-color: azure;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 20%;
+    padding: 0.1em;
+    margin-left: 7%;
+    margin-right:7% ;
+    text-align: center;
+
+}
+
+
+div.registro{
+
+    margin-left: 30%;
+    margin-top: 4%;
+
+}
+
+img.logo{
+    position: absolute;
+    margin-left: 42.5%;
+    overflow: hidden;
+    margin-top: 2%;
+    top: -2%;
+    
+
+}
+
+p.botones input{
+
+    font-weight: bold;
+    font-size: 1.0em;
+    background-color: gray;
+    
+
+}
+
+p.texto input{
+
+    font-style: italic;
+    font-size: 0.7em;
+    
+}
+
+p.contraseña input{
+
+    font-size: 0.7em;
+
+}
